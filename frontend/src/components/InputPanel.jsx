@@ -67,23 +67,96 @@ export default function InputPanel({
     </div>
   );
 
+  const popularStocks = [
+    {
+      region: "US",
+      flag: "\uD83C\uDDFA\uD83C\uDDF8",
+      stocks: [
+        { ticker: "AAPL", name: "Apple" },
+        { ticker: "GOOGL", name: "Google" },
+        { ticker: "MSFT", name: "Microsoft" },
+        { ticker: "AMZN", name: "Amazon" },
+        { ticker: "TSLA", name: "Tesla" },
+        { ticker: "NVDA", name: "Nvidia" },
+        { ticker: "META", name: "Meta" },
+        { ticker: "NFLX", name: "Netflix" },
+      ],
+    },
+    {
+      region: "India",
+      flag: "\uD83C\uDDEE\uD83C\uDDF3",
+      stocks: [
+        { ticker: "TCS.NS", name: "TCS" },
+        { ticker: "INFY.NS", name: "Infosys" },
+        { ticker: "RELIANCE.NS", name: "Reliance" },
+        { ticker: "HDFCBANK.NS", name: "HDFC Bank" },
+        { ticker: "WIPRO.NS", name: "Wipro" },
+        { ticker: "ICICIBANK.NS", name: "ICICI Bank" },
+        { ticker: "SBIN.NS", name: "SBI" },
+        { ticker: "TATAMOTORS.NS", name: "Tata Motors" },
+      ],
+    },
+  ];
+
+  const handleQuickPick = (t) => {
+    setTicker(t);
+    onFetchStock(t);
+  };
+
   return (
-    <div className="card p-5">
-      <h2 className="text-base font-bold mb-4" style={{ color: "var(--text-primary)" }}>
+    <div className="card p-4 sm:p-5">
+      <h2 className="text-sm sm:text-base font-bold mb-3 sm:mb-4" style={{ color: "var(--text-primary)" }}>
         Configuration
       </h2>
 
+      {/* Popular Stocks */}
+      <div className="mb-4 sm:mb-5">
+        <label className="block text-xs font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+          Popular Stocks
+        </label>
+        {popularStocks.map((group) => (
+          <div key={group.region} className="mb-2.5">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-sm">{group.flag}</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+                {group.region}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {group.stocks.map((s) => {
+                const isActive = ticker === s.ticker && stockInfo?.ticker === s.ticker;
+                return (
+                  <button
+                    key={s.ticker}
+                    onClick={() => handleQuickPick(s.ticker)}
+                    disabled={stockLoading}
+                    className="px-2.5 sm:px-2.5 py-2 sm:py-1.5 rounded-lg text-[11px] font-medium transition-all disabled:opacity-40 active:scale-95"
+                    style={{
+                      background: isActive ? "var(--accent-subtle)" : "var(--bg-input)",
+                      border: `1px solid ${isActive ? "var(--accent)" : "var(--border-primary)"}`,
+                      color: isActive ? "var(--accent)" : "var(--text-secondary)",
+                    }}
+                  >
+                    {s.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Ticker Input */}
-      <form onSubmit={handleTickerSubmit} className="mb-5">
+      <form onSubmit={handleTickerSubmit} className="mb-4 sm:mb-5">
         <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Stock Ticker
+          Or enter any ticker
         </label>
         <div className="flex gap-2">
           <input
             type="text"
             value={ticker}
             onChange={(e) => setTicker(e.target.value)}
-            placeholder="AAPL, TCS.NS, INFY.NS"
+            placeholder="e.g. BAJFINANCE.NS, AMD"
             className="flex-1 rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all"
             style={{
               background: "var(--bg-input)",
@@ -253,7 +326,7 @@ export default function InputPanel({
       <button
         onClick={handleSimulate}
         disabled={loading || !stockInfo}
-        className="w-full py-3.5 text-sm font-bold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full py-3.5 text-sm font-bold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
         style={{
           background: loading ? "var(--text-muted)" : "var(--success)",
           color: "#fff",

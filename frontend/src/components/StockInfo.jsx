@@ -19,38 +19,38 @@ export default function StockInfo({ stockInfo }) {
   ];
 
   return (
-    <div className="card p-5">
+    <div className="card p-4 sm:p-5">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
             <span
-              className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              className="text-[11px] sm:text-xs font-semibold px-2 py-0.5 rounded-full"
               style={{ background: "var(--accent-subtle)", color: "var(--accent)" }}
             >
               {stockInfo.ticker}
             </span>
             {stockInfo.sector && (
               <span
-                className="text-xs px-2 py-0.5 rounded-full"
+                className="text-[11px] sm:text-xs px-2 py-0.5 rounded-full"
                 style={{ background: "var(--purple-subtle)", color: "var(--purple)" }}
               >
                 {stockInfo.sector}
               </span>
             )}
           </div>
-          <h3 className="text-base font-semibold truncate" style={{ color: "var(--text-primary)" }}>
+          <h3 className="text-sm sm:text-base font-semibold truncate" style={{ color: "var(--text-primary)" }}>
             {stockInfo.name}
           </h3>
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+          <span className="text-[11px] sm:text-xs" style={{ color: "var(--text-muted)" }}>
             {stockInfo.exchange}
           </span>
         </div>
-        <div className="text-right pl-3">
-          <p className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
+        <div className="text-right pl-2 sm:pl-3">
+          <p className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
             {currency}{stockInfo.current_price.toFixed(2)}
           </p>
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>{stockInfo.currency}</span>
+          <span className="text-[11px] sm:text-xs" style={{ color: "var(--text-muted)" }}>{stockInfo.currency}</span>
         </div>
       </div>
 
@@ -74,17 +74,17 @@ export default function StockInfo({ stockInfo }) {
       )}
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
         {metrics.map((m) => (
           <div
             key={m.label}
-            className="rounded-xl p-3"
+            className="rounded-xl p-2.5 sm:p-3"
             style={{ background: "var(--bg-input)" }}
           >
-            <p className="text-[11px] font-medium mb-0.5" style={{ color: "var(--text-muted)" }}>
+            <p className="text-[10px] sm:text-[11px] font-medium mb-0.5" style={{ color: "var(--text-muted)" }}>
               {m.label}
             </p>
-            <p className="text-sm font-bold" style={{ color: m.color }}>
+            <p className="text-xs sm:text-sm font-bold" style={{ color: m.color }}>
               {m.value}
             </p>
           </div>

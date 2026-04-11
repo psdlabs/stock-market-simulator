@@ -60,24 +60,24 @@ function App() {
           backdropFilter: "blur(12px)",
         }}
       >
-        <div className="max-w-[1400px] mx-auto px-5 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-bold text-xs sm:text-sm shrink-0"
               style={{ background: "var(--success)", color: "#fff" }}
             >
               SS
             </div>
             <div>
-              <h1 className="text-sm font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
+              <h1 className="text-xs sm:text-sm font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
                 Stock Market Simulator
               </h1>
-              <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+              <p className="text-[10px] sm:text-[11px] hidden sm:block" style={{ color: "var(--text-muted)" }}>
                 Price Prediction &amp; Risk Analysis
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {result && (
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "var(--success-subtle)" }}>
                 <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--success)" }} />
@@ -92,7 +92,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1400px] mx-auto px-5 py-6">
+      <main className="max-w-[1400px] mx-auto px-3 sm:px-5 py-4 sm:py-6">
         {/* Error Banner */}
         {error && (
           <div
@@ -117,9 +117,9 @@ function App() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
           {/* Left Sidebar */}
-          <div className="lg:col-span-4 xl:col-span-3 space-y-5">
+          <div className="lg:col-span-4 xl:col-span-3 space-y-4 sm:space-y-5">
             <InputPanel
               onFetchStock={fetchStockInfo}
               onSimulate={runSimulation}
@@ -131,34 +131,32 @@ function App() {
           </div>
 
           {/* Right Content */}
-          <div className="lg:col-span-8 xl:col-span-9 space-y-5">
+          <div className="lg:col-span-8 xl:col-span-9 space-y-4 sm:space-y-5">
             {loading && <LoadingSpinner simCount={1000} />}
 
             {!loading && !result && (
               <div
-                className="card flex flex-col items-center justify-center py-24 px-8 text-center"
+                className="card flex flex-col items-center justify-center py-14 sm:py-24 px-5 sm:px-8 text-center"
               >
                 <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-4 sm:mb-5 pulse-glow"
                   style={{ background: "var(--accent-subtle)" }}
                 >
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+                <h3 className="text-base sm:text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>
                   Ready to Simulate
                 </h3>
-                <p className="text-sm max-w-md leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Enter a stock ticker, configure your simulation parameters, and
-                  run the simulation engine to visualize predicted price
-                  distributions with comprehensive risk analytics.
+                <p className="text-xs sm:text-sm max-w-md leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Pick a stock from the sidebar, tweak parameters, and hit Run to see predicted price paths with full risk analytics.
                 </p>
-                <div className="flex flex-wrap justify-center gap-2 mt-5">
+                <div className="flex flex-wrap justify-center gap-2 mt-4 sm:mt-5">
                   {["AAPL", "TCS.NS", "GOOGL", "INFY.NS", "MSFT", "TSLA"].map((t) => (
                     <span
                       key={t}
-                      className="text-xs px-2.5 py-1 rounded-lg font-medium"
+                      className="text-[11px] sm:text-xs px-2.5 py-1 rounded-lg font-medium"
                       style={{ background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-primary)" }}
                     >
                       {t}
@@ -186,8 +184,8 @@ function App() {
       </main>
 
       {/* Disclaimer + Footer */}
-      <footer className="mt-12 py-6" style={{ borderTop: "1px solid var(--border-primary)" }}>
-        <div className="max-w-[1400px] mx-auto px-5">
+      <footer className="mt-8 sm:mt-12 py-5 sm:py-6" style={{ borderTop: "1px solid var(--border-primary)" }}>
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-5">
           <div
             className="rounded-xl p-4 mb-4 flex gap-3"
             style={{ background: "var(--warning-subtle)", border: "1px solid color-mix(in srgb, var(--warning) 25%, transparent)" }}

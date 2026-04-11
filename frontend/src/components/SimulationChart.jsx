@@ -10,12 +10,18 @@ import {
   Area,
   ComposedChart,
 } from "recharts";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export default function SimulationChart({ result }) {
   if (!result) return null;
 
   const [view, setView] = useState("paths"); // "paths" or "bands"
+  const [chartHeight, setChartHeight] = useState(window.innerWidth < 640 ? 280 : 420);
+  useEffect(() => {
+    const onResize = () => setChartHeight(window.innerWidth < 640 ? 280 : 420);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
   const { sample_paths, time_axis, current_price, confidence_bands } = result;
   const isINR = result.ticker.endsWith(".NS") || result.ticker.endsWith(".BO");
   const cur = isINR ? "\u20B9" : "$";
@@ -63,13 +69,13 @@ export default function SimulationChart({ result }) {
   };
 
   return (
-    <div className="card p-5">
-      <div className="flex items-center justify-between mb-5">
+    <div className="card p-4 sm:p-5">
+      <div className="flex items-center justify-between mb-4 sm:mb-5">
         <div>
-          <h3 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>
+          <h3 className="text-sm sm:text-base font-bold" style={{ color: "var(--text-primary)" }}>
             Price Simulation
           </h3>
-          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+          <p className="text-[11px] sm:text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
             {view === "paths"
               ? `${sample_paths.length} representative paths`
               : "Confidence bands (5th-95th percentile)"}
@@ -95,7 +101,7 @@ export default function SimulationChart({ result }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={420}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
         {view === "paths" ? (
           <LineChart data={pathData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} />
@@ -190,7 +196,7 @@ export default function SimulationChart({ result }) {
 
       {/* Legend */}
       {view === "paths" && (
-        <div className="flex items-center justify-center gap-4 mt-3 pt-3" style={{ borderTop: "1px solid var(--border-primary)" }}>
+        <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1.5 mt-3 pt-3" style={{ borderTop: "1px solid var(--border-primary)" }}>
           {[
             { color: "var(--danger)", label: "Worst" },
             { color: "var(--warning)", label: "Below Avg" },
@@ -200,7 +206,7 @@ export default function SimulationChart({ result }) {
           ].map((l) => (
             <div key={l.label} className="flex items-center gap-1.5">
               <div className="w-3 h-0.5 rounded-full" style={{ background: l.color }} />
-              <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{l.label}</span>
+              <span className="text-[10px] sm:text-[11px]" style={{ color: "var(--text-muted)" }}>{l.label}</span>
             </div>
           ))}
         </div>
