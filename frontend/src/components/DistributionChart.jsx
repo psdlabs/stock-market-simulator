@@ -17,9 +17,10 @@ export default function DistributionChart({ result }) {
   const { distribution_bins, current_price, final_prices } = result;
   const isINR = result.ticker.endsWith(".NS") || result.ticker.endsWith(".BO");
   const cur = isINR ? "\u20B9" : "$";
-  const [chartHeight, setChartHeight] = useState(window.innerWidth < 640 ? 240 : 320);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const chartHeight = isMobile ? 220 : 320;
   useEffect(() => {
-    const onResize = () => setChartHeight(window.innerWidth < 640 ? 240 : 320);
+    const onResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -68,54 +69,57 @@ export default function DistributionChart({ result }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={chartHeight}>
-        <BarChart data={chartData} barCategoryGap="1%">
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} vertical={false} />
-          <XAxis
-            dataKey="price"
-            stroke="var(--text-muted)"
-            tick={{ fontSize: 10, fill: "var(--text-muted)" }}
-            axisLine={{ stroke: "var(--border-primary)" }}
-            tickLine={{ stroke: "var(--border-primary)" }}
-            tickFormatter={(v) => `${cur}${v}`}
-            interval="preserveStartEnd"
-          />
-          <YAxis
-            stroke="var(--text-muted)"
-            tick={{ fontSize: 11, fill: "var(--text-muted)" }}
-            axisLine={{ stroke: "var(--border-primary)" }}
-            tickLine={{ stroke: "var(--border-primary)" }}
-          />
-          <Tooltip
-            contentStyle={tooltipStyle}
-            formatter={(value) => [value, "Simulations"]}
-            labelFormatter={(label) => `Price: ${cur}${label}`}
-            cursor={{ fill: "var(--bg-hover)", opacity: 0.3 }}
-          />
-          <ReferenceLine
-            x={Math.round(current_price)}
-            stroke="var(--warning)"
-            strokeDasharray="6 4"
-            strokeWidth={2}
-            label={{
-              value: `Current: ${cur}${current_price.toFixed(0)}`,
-              fill: "var(--warning)",
-              fontSize: 11,
-              fontWeight: 600,
-              position: "top",
-            }}
-          />
-          <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-            {chartData.map((entry, idx) => (
-              <Cell
-                key={idx}
-                fill={entry.isAboveCurrent ? "var(--success)" : "var(--danger)"}
-                opacity={0.75}
-              />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ overflow: "hidden", width: "100%" }}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <BarChart data={chartData} barCategoryGap="1%" margin={{ left: isMobile ? -20 : 5, right: isMobile ? 5 : 10, top: 5, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} vertical={false} />
+            <XAxis
+              dataKey="price"
+              stroke="var(--text-muted)"
+              tick={{ fontSize: isMobile ? 8 : 10, fill: "var(--text-muted)" }}
+              axisLine={{ stroke: "var(--border-primary)" }}
+              tickLine={{ stroke: "var(--border-primary)" }}
+              tickFormatter={(v) => isMobile ? `${v}` : `${cur}${v}`}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              stroke="var(--text-muted)"
+              tick={{ fontSize: isMobile ? 9 : 11, fill: "var(--text-muted)" }}
+              axisLine={{ stroke: "var(--border-primary)" }}
+              tickLine={{ stroke: "var(--border-primary)" }}
+              width={isMobile ? 30 : 50}
+            />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(value) => [value, "Simulations"]}
+              labelFormatter={(label) => `Price: ${cur}${label}`}
+              cursor={false}
+            />
+            <ReferenceLine
+              x={Math.round(current_price)}
+              stroke="var(--warning)"
+              strokeDasharray="6 4"
+              strokeWidth={2}
+              label={isMobile ? undefined : {
+                value: `Current: ${cur}${current_price.toFixed(0)}`,
+                fill: "var(--warning)",
+                fontSize: 11,
+                fontWeight: 600,
+                position: "top",
+              }}
+            />
+            <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+              {chartData.map((entry, idx) => (
+                <Cell
+                  key={idx}
+                  fill={entry.isAboveCurrent ? "var(--success)" : "var(--danger)"}
+                  opacity={0.75}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Probability of Loss vs Gain bar */}
       {result.investment_analysis && (() => {
