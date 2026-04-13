@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 # Simple in-memory cache: { (ticker, lookback_days): { "data": ..., "ts": ... } }
 _cache = {}
 _cache_lock = threading.Lock()
-_CACHE_TTL = 300  # 5 minutes
+_CACHE_TTL = 86400  # 24 hours — one fetch per stock per day
 
 
 def _get_cached(ticker: str, lookback_days: int):
