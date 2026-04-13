@@ -196,8 +196,12 @@ input[type="range"]::-moz-range-thumb {
   stroke: var(--bg-card) !important;
 }
 
-/* Prevent chart overflow */
+/* Chart container — clips overflow without breaking ResponsiveContainer */
+.chart-wrap {
+  width: 100%;
+  overflow-x: clip;
+  overflow-y: visible;
+}
 .recharts-wrapper {
   max-width: 100% !important;
-  overflow: hidden !important;
 }

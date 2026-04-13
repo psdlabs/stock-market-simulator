@@ -69,9 +69,9 @@ export default function DistributionChart({ result }) {
         </div>
       </div>
 
-      <div style={{ overflow: "hidden", width: "100%" }}>
+      <div className="chart-wrap">
         <ResponsiveContainer width="100%" height={chartHeight}>
-          <BarChart data={chartData} barCategoryGap="1%" margin={{ left: isMobile ? -20 : 5, right: isMobile ? 5 : 10, top: 5, bottom: 0 }}>
+          <BarChart data={chartData} barCategoryGap="1%" margin={{ left: isMobile ? 0 : 5, right: isMobile ? 5 : 10, top: 5, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} vertical={false} />
             <XAxis
               dataKey="price"

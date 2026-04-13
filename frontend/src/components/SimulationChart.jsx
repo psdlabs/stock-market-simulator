@@ -102,10 +102,10 @@ export default function SimulationChart({ result }) {
         </div>
       </div>
 
-      <div style={{ overflow: "hidden", width: "100%" }}>
+      <div className="chart-wrap">
         <ResponsiveContainer width="100%" height={chartHeight}>
           {view === "paths" ? (
-            <LineChart data={pathData} margin={{ left: isMobile ? -15 : 5, right: isMobile ? 5 : 10, top: 5, bottom: isMobile ? 0 : 5 }}>
+            <LineChart data={pathData} margin={{ left: isMobile ? 0 : 5, right: isMobile ? 5 : 10, top: 5, bottom: isMobile ? 0 : 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} />
               <XAxis
                 dataKey="day"
@@ -151,7 +151,7 @@ export default function SimulationChart({ result }) {
               ))}
             </LineChart>
           ) : (
-            <ComposedChart data={bandData} margin={{ left: isMobile ? -15 : 5, right: isMobile ? 5 : 10, top: 5, bottom: isMobile ? 0 : 5 }}>
+            <ComposedChart data={bandData} margin={{ left: isMobile ? 0 : 5, right: isMobile ? 5 : 10, top: 5, bottom: isMobile ? 0 : 5 }}>
               <defs>
                 <linearGradient id="band95" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.08} />
