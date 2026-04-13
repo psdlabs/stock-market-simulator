@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSimulation } from "./hooks/useSimulation";
 import { useTheme } from "./hooks/useTheme";
 import InputPanel from "./components/InputPanel";
@@ -48,6 +49,10 @@ function App() {
     runSimulation,
     setError,
   } = useSimulation();
+
+  useEffect(() => {
+    fetch("/api/track-visit", { method: "POST" }).catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>

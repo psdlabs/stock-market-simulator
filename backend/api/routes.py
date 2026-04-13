@@ -1,7 +1,11 @@
 import asyncio
+import json
+import threading
+from datetime import datetime, date
+from pathlib import Path
 
 import numpy as np
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from core.simulation import run_monte_carlo
 from core.stock_data import fetch_stock_data
@@ -13,10 +17,56 @@ from models.schemas import (
 
 router = APIRouter()
 
+# --- Simple file-based analytics ---
+ANALYTICS_FILE = Path(__file__).resolve().parent.parent / "analytics.json"
+_analytics_lock = threading.Lock()
+
+
+def _load_analytics() -> dict:
+    if ANALYTICS_FILE.exists():
+        try:
+            return json.loads(ANALYTICS_FILE.read_text())
+        except Exception:
+            pass
+    return {"total_visits": 0, "total_simulations": 0, "daily": {}}
+
+
+def _save_analytics(data: dict):
+    ANALYTICS_FILE.write_text(json.dumps(data, indent=2))
+
+
+def _track(event: str):
+    today = date.today().isoformat()
+    with _analytics_lock:
+        data = _load_analytics()
+        if event == "visit":
+            data["total_visits"] += 1
+        elif event == "simulation":
+            data["total_simulations"] += 1
+        if today not in data["daily"]:
+            data["daily"][today] = {"visits": 0, "simulations": 0}
+        if event == "visit":
+            data["daily"][today]["visits"] += 1
+        elif event == "simulation":
+            data["daily"][today]["simulations"] += 1
+        _save_analytics(data)
+
 
 @router.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+
+@router.get("/analytics")
+async def get_analytics():
+    data = _load_analytics()
+    return data
+
+
+@router.post("/track-visit")
+async def track_visit():
+    _track("visit")
+    return {"ok": True}
 
 
 @router.get("/stock/{ticker}", response_model=StockInfoResponse)
@@ -56,6 +106,7 @@ async def get_stock_info(ticker: str):
 
 @router.post("/simulate", response_model=SimulationResponse)
 async def simulate(request: SimulationRequest):
+    _track("simulation")
     try:
         stock_data = await asyncio.to_thread(
             fetch_stock_data, request.ticker, request.lookback_days
