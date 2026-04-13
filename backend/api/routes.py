@@ -24,6 +24,12 @@ async def get_stock_info(ticker: str):
     try:
         data = await asyncio.to_thread(fetch_stock_data, ticker)
     except Exception as e:
+        err = str(e).lower()
+        if "rate" in err or "too many" in err or "429" in err:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Yahoo Finance rate limit hit. Please wait 30 seconds and try again.",
+            )
         raise HTTPException(
             status_code=404,
             detail=f"Could not fetch data for '{ticker}': {str(e)}",

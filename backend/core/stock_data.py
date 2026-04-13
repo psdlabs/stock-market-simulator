@@ -1,16 +1,56 @@
+import time
+import threading
+
 import yfinance as yf
 import numpy as np
 from scipy import stats as sp_stats
 from datetime import datetime, timedelta
 
+# Simple in-memory cache: { (ticker, lookback_days): { "data": ..., "ts": ... } }
+_cache = {}
+_cache_lock = threading.Lock()
+_CACHE_TTL = 300  # 5 minutes
+
+
+def _get_cached(ticker: str, lookback_days: int):
+    key = (ticker.upper(), lookback_days)
+    with _cache_lock:
+        entry = _cache.get(key)
+        if entry and (time.time() - entry["ts"]) < _CACHE_TTL:
+            return entry["data"]
+    return None
+
+
+def _set_cached(ticker: str, lookback_days: int, data: dict):
+    key = (ticker.upper(), lookback_days)
+    with _cache_lock:
+        _cache[key] = {"data": data, "ts": time.time()}
+
+
+def _fetch_with_retry(stock, start_date, end_date, max_retries=3):
+    """Fetch history with exponential backoff on rate limits."""
+    for attempt in range(max_retries):
+        hist = stock.history(start=start_date, end=end_date)
+        if not hist.empty:
+            return hist
+        # yfinance returns empty on rate limit — wait and retry
+        if attempt < max_retries - 1:
+            time.sleep(2 ** attempt)
+    return hist
+
 
 def fetch_stock_data(ticker: str, lookback_days: int = 365) -> dict:
     """Fetch historical stock data and compute comprehensive GBM parameters."""
+    # Check cache first
+    cached = _get_cached(ticker, lookback_days)
+    if cached is not None:
+        return cached
+
     stock = yf.Ticker(ticker)
     end_date = datetime.now()
     start_date = end_date - timedelta(days=lookback_days)
 
-    hist = stock.history(start=start_date, end=end_date)
+    hist = _fetch_with_retry(stock, start_date, end_date)
 
     if hist.empty or len(hist) < 30:
         raise ValueError(
@@ -38,7 +78,10 @@ def fetch_stock_data(ticker: str, lookback_days: int = 365) -> dict:
 
     current_price = float(close_prices[-1])
 
-    info = stock.info
+    try:
+        info = stock.info
+    except Exception:
+        info = {}
     name = info.get("longName", info.get("shortName", ticker))
     currency = info.get("currency", "USD")
     exchange = info.get("exchange", "Unknown")
@@ -55,7 +98,7 @@ def fetch_stock_data(ticker: str, lookback_days: int = 365) -> dict:
     market_cap = info.get("marketCap", None)
     sector = info.get("sector", None)
 
-    return {
+    result = {
         "ticker": ticker,
         "name": name,
         "current_price": current_price,
@@ -72,3 +115,6 @@ def fetch_stock_data(ticker: str, lookback_days: int = 365) -> dict:
         "skewness": round(skewness, 4),
         "kurtosis": round(kurtosis, 4),
     }
+
+    _set_cached(ticker, lookback_days, result)
+    return result
