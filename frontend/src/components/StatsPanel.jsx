@@ -52,12 +52,12 @@ export default function StatsPanel({ result }) {
         {
           label: "95% Range",
           caption: "19 out of 20 scenarios land here",
-          value: `${cur}${final_prices.percentiles.p5.toFixed(0)}–${cur}${final_prices.percentiles.p95.toFixed(0)}`,
+          value: `${cur}${final_prices.percentiles.p5.toFixed(0)} — ${cur}${final_prices.percentiles.p95.toFixed(0)}`,
         },
         {
           label: "90% Range",
           caption: "Tighter confidence interval",
-          value: `${cur}${final_prices.percentiles.p10.toFixed(0)}–${cur}${final_prices.percentiles.p90.toFixed(0)}`,
+          value: `${cur}${final_prices.percentiles.p10.toFixed(0)} — ${cur}${final_prices.percentiles.p90.toFixed(0)}`,
         },
       ],
     },
@@ -257,9 +257,9 @@ export default function StatsPanel({ result }) {
                     </div>
 
                     {/* Right: value + badge */}
-                    <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 max-w-[45%] sm:max-w-none">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <span
-                        className="text-[11px] sm:text-sm font-bold text-right truncate"
+                        className="text-xs sm:text-sm font-bold"
                         style={{ color: row.color || "var(--text-primary)" }}
                       >
                         {row.value}

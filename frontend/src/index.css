@@ -69,11 +69,6 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
-  overflow-x: hidden;
-  max-width: 100vw;
-}
-
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -184,24 +179,4 @@ input[type="range"]::-moz-range-thumb {
   .card {
     border-radius: 14px;
   }
-}
-
-/* Fix Recharts black box on mobile touch */
-.recharts-tooltip-cursor {
-  fill: var(--bg-hover) !important;
-  opacity: 0.15 !important;
-  stroke: none !important;
-}
-.recharts-active-dot circle {
-  stroke: var(--bg-card) !important;
-}
-
-/* Chart container — clips overflow without breaking ResponsiveContainer */
-.chart-wrap {
-  width: 100%;
-  overflow-x: clip;
-  overflow-y: visible;
-}
-.recharts-wrapper {
-  max-width: 100% !important;
 }

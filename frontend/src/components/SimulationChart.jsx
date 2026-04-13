@@ -16,10 +16,9 @@ export default function SimulationChart({ result }) {
   if (!result) return null;
 
   const [view, setView] = useState("paths"); // "paths" or "bands"
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
-  const chartHeight = isMobile ? 260 : 420;
+  const [chartHeight, setChartHeight] = useState(window.innerWidth < 640 ? 280 : 420);
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 640);
+    const onResize = () => setChartHeight(window.innerWidth < 640 ? 280 : 420);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -102,105 +101,98 @@ export default function SimulationChart({ result }) {
         </div>
       </div>
 
-      <div className="chart-wrap">
-        <ResponsiveContainer width="100%" height={chartHeight}>
-          {view === "paths" ? (
-            <LineChart data={pathData} margin={{ left: isMobile ? 0 : 5, right: isMobile ? 5 : 10, top: 5, bottom: isMobile ? 0 : 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} />
-              <XAxis
-                dataKey="day"
-                stroke="var(--text-muted)"
-                tick={{ fontSize: isMobile ? 9 : 11, fill: "var(--text-muted)" }}
-                axisLine={{ stroke: "var(--border-primary)" }}
-                tickLine={{ stroke: "var(--border-primary)" }}
-                label={isMobile ? undefined : { value: "Trading Days", position: "insideBottom", offset: -5, fill: "var(--text-muted)", fontSize: 11 }}
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        {view === "paths" ? (
+          <LineChart data={pathData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} />
+            <XAxis
+              dataKey="day"
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+              axisLine={{ stroke: "var(--border-primary)" }}
+              tickLine={{ stroke: "var(--border-primary)" }}
+              label={{ value: "Trading Days", position: "insideBottom", offset: -5, fill: "var(--text-muted)", fontSize: 11 }}
+            />
+            <YAxis
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+              axisLine={{ stroke: "var(--border-primary)" }}
+              tickLine={{ stroke: "var(--border-primary)" }}
+              domain={["auto", "auto"]}
+              tickFormatter={(v) => `${cur}${v.toFixed(0)}`}
+            />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(value) => [`${cur}${value.toFixed(2)}`, ""]}
+              labelFormatter={(label) => `Day ${label}`}
+            />
+            <ReferenceLine
+              y={current_price}
+              stroke="var(--text-muted)"
+              strokeDasharray="6 4"
+              strokeWidth={1.5}
+            />
+            {sample_paths.map((_, idx) => (
+              <Line
+                key={idx}
+                type="monotone"
+                dataKey={`p${idx}`}
+                stroke={getPathColor(idx, sample_paths.length)}
+                dot={false}
+                strokeWidth={1.2}
+                opacity={0.35}
+                isAnimationActive={false}
               />
-              <YAxis
-                stroke="var(--text-muted)"
-                tick={{ fontSize: isMobile ? 9 : 11, fill: "var(--text-muted)" }}
-                axisLine={{ stroke: "var(--border-primary)" }}
-                tickLine={{ stroke: "var(--border-primary)" }}
-                domain={["auto", "auto"]}
-                tickFormatter={(v) => isMobile ? `${v.toFixed(0)}` : `${cur}${v.toFixed(0)}`}
-                width={isMobile ? 40 : 65}
-              />
-              <Tooltip
-                contentStyle={tooltipStyle}
-                formatter={(value) => [`${cur}${value.toFixed(2)}`, ""]}
-                labelFormatter={(label) => `Day ${label}`}
-                cursor={false}
-              />
-              <ReferenceLine
-                y={current_price}
-                stroke="var(--text-muted)"
-                strokeDasharray="6 4"
-                strokeWidth={1.5}
-              />
-              {sample_paths.map((_, idx) => (
-                <Line
-                  key={idx}
-                  type="monotone"
-                  dataKey={`p${idx}`}
-                  stroke={getPathColor(idx, sample_paths.length)}
-                  dot={false}
-                  activeDot={false}
-                  strokeWidth={1.2}
-                  opacity={0.35}
-                  isAnimationActive={false}
-                />
-              ))}
-            </LineChart>
-          ) : (
-            <ComposedChart data={bandData} margin={{ left: isMobile ? 0 : 5, right: isMobile ? 5 : 10, top: 5, bottom: isMobile ? 0 : 5 }}>
-              <defs>
-                <linearGradient id="band95" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.08} />
-                  <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.02} />
-                </linearGradient>
-                <linearGradient id="band75" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.08} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} />
-              <XAxis
-                dataKey="day"
-                stroke="var(--text-muted)"
-                tick={{ fontSize: isMobile ? 9 : 11, fill: "var(--text-muted)" }}
-                axisLine={{ stroke: "var(--border-primary)" }}
-                label={isMobile ? undefined : { value: "Trading Days", position: "insideBottom", offset: -5, fill: "var(--text-muted)", fontSize: 11 }}
-              />
-              <YAxis
-                stroke="var(--text-muted)"
-                tick={{ fontSize: isMobile ? 9 : 11, fill: "var(--text-muted)" }}
-                axisLine={{ stroke: "var(--border-primary)" }}
-                domain={["auto", "auto"]}
-                tickFormatter={(v) => isMobile ? `${v.toFixed(0)}` : `${cur}${v.toFixed(0)}`}
-                width={isMobile ? 40 : 65}
-              />
-              <Tooltip
-                contentStyle={tooltipStyle}
-                formatter={(value, name) => {
-                  const labels = { p5: "5th %ile", p25: "25th %ile", p50: "Median", p75: "75th %ile", p95: "95th %ile" };
-                  return [`${cur}${value.toFixed(2)}`, labels[name] || name];
-                }}
-                labelFormatter={(label) => `Day ${label}`}
-                cursor={false}
-              />
-              <ReferenceLine y={current_price} stroke="var(--text-muted)" strokeDasharray="6 4" strokeWidth={1.5} />
-              <Area type="monotone" dataKey="p95" stroke="none" fill="url(#band95)" activeDot={false} />
-              <Area type="monotone" dataKey="p5" stroke="none" fill="var(--bg-card)" activeDot={false} />
-              <Area type="monotone" dataKey="p75" stroke="none" fill="url(#band75)" activeDot={false} />
-              <Area type="monotone" dataKey="p25" stroke="none" fill="var(--bg-card)" activeDot={false} />
-              <Line type="monotone" dataKey="p95" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} activeDot={false} opacity={0.6} />
-              <Line type="monotone" dataKey="p75" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} activeDot={false} opacity={0.4} />
-              <Line type="monotone" dataKey="p50" stroke="var(--accent)" strokeWidth={2.5} dot={false} activeDot={false} />
-              <Line type="monotone" dataKey="p25" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} activeDot={false} opacity={0.4} />
-              <Line type="monotone" dataKey="p5" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} activeDot={false} opacity={0.6} />
-            </ComposedChart>
-          )}
-        </ResponsiveContainer>
-      </div>
+            ))}
+          </LineChart>
+        ) : (
+          <ComposedChart data={bandData}>
+            <defs>
+              <linearGradient id="band95" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.08} />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.02} />
+              </linearGradient>
+              <linearGradient id="band75" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.18} />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.08} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.5} />
+            <XAxis
+              dataKey="day"
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+              axisLine={{ stroke: "var(--border-primary)" }}
+              label={{ value: "Trading Days", position: "insideBottom", offset: -5, fill: "var(--text-muted)", fontSize: 11 }}
+            />
+            <YAxis
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+              axisLine={{ stroke: "var(--border-primary)" }}
+              domain={["auto", "auto"]}
+              tickFormatter={(v) => `${cur}${v.toFixed(0)}`}
+            />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(value, name) => {
+                const labels = { p5: "5th %ile", p25: "25th %ile", p50: "Median", p75: "75th %ile", p95: "95th %ile" };
+                return [`${cur}${value.toFixed(2)}`, labels[name] || name];
+              }}
+              labelFormatter={(label) => `Day ${label}`}
+            />
+            <ReferenceLine y={current_price} stroke="var(--text-muted)" strokeDasharray="6 4" strokeWidth={1.5} />
+            <Area type="monotone" dataKey="p95" stroke="none" fill="url(#band95)" />
+            <Area type="monotone" dataKey="p5" stroke="none" fill="var(--bg-card)" />
+            <Area type="monotone" dataKey="p75" stroke="none" fill="url(#band75)" />
+            <Area type="monotone" dataKey="p25" stroke="none" fill="var(--bg-card)" />
+            <Line type="monotone" dataKey="p95" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} opacity={0.6} />
+            <Line type="monotone" dataKey="p75" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} opacity={0.4} />
+            <Line type="monotone" dataKey="p50" stroke="var(--accent)" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" dataKey="p25" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} opacity={0.4} />
+            <Line type="monotone" dataKey="p5" stroke="var(--accent)" strokeWidth={1} strokeDasharray="4 2" dot={false} opacity={0.6} />
+          </ComposedChart>
+        )}
+      </ResponsiveContainer>
 
       {/* Legend */}
       {view === "paths" && (
